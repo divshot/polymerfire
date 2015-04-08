@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../polymer/polymer.html">
+    <link rel="import" href="polymerfire.html">
+  </head>
+  <body>
+    <script>
+      Polymer({
+        is: 'demo-user',
+        mixins: [PolymerFire({
+          root: 'https://mbleigh-sandbox.firebaseio.com/polymerfire/users',
+          childProperty: "userid",
+          properties: ["name","email"]
+        })],
+        attached: function() {
+          this.bindRef();
+        },
+        detached: function() {
+          this.unbindRef();
+        },
+        properties: {
+          userid: {
+            type: String,
+            notify: true
+          },
+          name: {
+            type: String,
+            notify: true
+          },
+          email: {
+            type: String,
+            notify: true
+          }
+        }
+      });
+    </script>
+
+    <template is="x-autobind">
+      <demo-user userid="example" name="{{name}}" email="{{email}}"></demo-user>
+
+      <label>Name: <input value="{{name::keyup}}"></label><br>
+      <label>Email: <input value="{{email::keyup}}"></label>
+    </template>
+  </body>
+</html>

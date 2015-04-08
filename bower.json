@@ -1,0 +1,27 @@
+{
+  "name": "polymerfire",
+  "main": "polymerfire.html",
+  "version": "0.0.0",
+  "authors": [
+    "Michael Bleigh <mbleigh@mbleigh.com>"
+  ],
+  "description": "Simple Firebase bindings for Polymer 0.8",
+  "keywords": [
+    "web-components",
+    "polymer-mixin",
+    "firebase"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/divshot/polymerfire",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "firebase": "~2.2.3",
+    "polymer": "polymer/polymer#^0.8.0"
+  }
+}
