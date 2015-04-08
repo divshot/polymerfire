@@ -6,7 +6,7 @@ between custom Polymer elements and Firebase.
 ### Installation
 
     bower install --save divshot/polymerfire
-    
+
 ### Usage
 
 First, you'll need to include PolymerFire using an HTML Import:
@@ -43,6 +43,31 @@ use the `bindRef()` and `unbindRef()` methods to activate the binding:
 </script>
 ```
 
+### Binding Mechanics
+
+PolymerFire uses the same binding mechanics as Polymer generally: it
+listens for `[property]-changed` events to sync data back to Firebase. If you
+modify a properties data in a way that doesn't trigger an event (e.g. changing
+a property on an object), you will need to manually fire the event to sync the
+change.
+
+You can use Polymer's one-way bindings (`[[prop]]` instead of `{{prop}}`) to
+bind data in situations where you don't want changes to persist back to Firebase.
+
+As an example of binding to native form elements, if we had a PolymerFire mixin
+to the `name` and `email` properties of an element, we might do something like
+this:
+
+```html
+<!-- app-user is bound to Firebase -->
+<app-user id="123" name="{{name}}" email="{{email}}"></app-user>
+
+<!-- name is bound to `keyup` and persists on each keystroke -->
+<input value="{{name::keyup}}">
+<!-- email is bound to `change` and persist on blur or form submission -->
+<input value="{{email::change}}">
+```
+
 ### Available Options
 
 * **root:** The Firebase URL to which to bind. If `childProperty` is specified,
@@ -64,3 +89,4 @@ use the `bindRef()` and `unbindRef()` methods to activate the binding:
 - [ ] Create means of binding arrays in addition to lists
 - [ ] Allow for sub-property path change binding (e.g. `user.name`)
 - [ ] Allow for a global Firebase root to be set such that a `path` option can be used instead of a full URL
+- [ ] Add `syncRef()` to manually sync the entire property set back to the ref
