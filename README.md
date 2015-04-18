@@ -105,7 +105,7 @@ PolymerFire allows for the registration of named origins. These are registered
 like so:
 
     PolymerFire.origin('https://my.firebaseio.com', 'app');
-    
+
 The second argument is optional and allows you to keep multiple named origins
 in the same application (name will be `_default` if not set).
 
@@ -113,8 +113,10 @@ To utilize named origins, specify your ref as an absolute path instead of a
 fully-qualified URL when binding, and use the `origin` option to specify a name:
 
     this.bindRef('/users/:uid', {origin: 'app'});
-    
-If the `origin` option isn't specified, it will use the default if set.
+
+If the `origin` option isn't specified, it will use the default origin. If the
+specified or default origin hasn't been registered, it will wait to bind until
+it is registered (see below).
 
 #### Delayed Binding
 

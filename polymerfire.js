@@ -2,12 +2,28 @@
   var dasherize = Polymer.CaseMap.camelToDashCase;
 
   var PolymerFire = {
+    _origins: {},
+    _originListeners: {},
+
+    origin: function(url, name) {
+      name = name || '_default';
+      PolymerFire._origins[name] = url;
+      var listeners = PolymerFire._originListeners[name];
+      if (!listeners) {
+        PolymerFire._originListeners[name] = [];
+        return;
+      }
+      for (var i = 0; i < listeners.length; i++) {
+        listeners[i]._firebase.updateUrl();
+      }
+    },
     Binding: {
       bindRef: function(ref, options) {
         options = options || {};
         this.unbindRef();
 
         this._firebase = {
+          origin: options.origin || '_default',
           listeners: [],
           syncProps: {},
           updating: {},
@@ -45,6 +61,7 @@
           var args = this._firebase.listeners[i];
           this.removeEventListener.apply(this, args);
         }
+        PolymerFire._removeOriginListener(this._firebase.origin, this);
         this._firebase = null;
       },
 
@@ -65,6 +82,8 @@
 
       _firebaseBindUrlTemplate: function(urlTemplate) {
         var parts = urlTemplate.split('/');
+        var origin = this._firebase.origin;
+        var pathOnly = urlTemplate.indexOf('/') === 0;
 
         var propNames = [];
         var segmentProps = {};
@@ -96,8 +115,15 @@
             }
           }
 
+          if (pathOnly && !PolymerFire._origins[origin]) {
+            ready = false;
+          }
+
           if (ready) {
             var outUrl = outParts.join("/")
+            if (pathOnly) {
+              outUrl = PolymerFire._origins[origin] + outUrl;
+            }
             this._firebaseLog("Binding to URL " + outUrl);
             this._firebaseBindUrl(outUrl);
           } else {
@@ -105,14 +131,17 @@
             this._firebaseBindUrl(null);
           }
         }
-        updateFn = updateFn.bind(this);
+        this._firebase.updateUrl = updateFn.bind(this);
 
+        if (pathOnly) {
+          PolymerFire._addOriginListener(origin, this);
+        }
         for (var i = 0; i < propNames.length; i++) {
           var ev = dasherize(propNames[i]) + '-changed';
           this.addEventListener(ev, updateFn);
-          this._firebase.listeners.push([ev, updateFn]);
+          this._firebase.listeners.push([ev, this._firebase.updateUrl]);
         }
-        updateFn();
+        this._firebase.updateUrl();
       },
 
       _firebaseBindUrl: function(url) {
@@ -182,7 +211,18 @@
           if (err) throw new Error("PolymerFire: " + err);
         }.bind(this));
       }
-    }
+    },
+
+    _addOriginListener: function(name, el) {
+      PolymerFire._originListeners[name] = PolymerFire._originListeners[name] || [];
+      PolymerFire._originListeners[name].push(el);
+    },
+    _removeOriginListener: function(name, el) {
+      if (!PolymerFire._originListeners[name]) return;
+      var i = PolymerFire._originListeners[name].indexOf(el);
+      if (i < 0) return;
+      PolymerFire._originListeners[name].splice(i, 1);
+    },
   }
 
   context.PolymerFire = PolymerFire;
