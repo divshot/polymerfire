@@ -22,7 +22,7 @@ use the `bindRef()` and `unbindRef()` methods to activate the binding:
 <script>
   Polymer({
     is: 'app-user',
-    mixins: [PolymerFire],
+    mixins: [PolymerFire.Binding],
     properties: {
       uid: String,
       firstName: {
@@ -62,10 +62,20 @@ the property changes.
 * **manual:** When `true`, data will be synced *from* Firebase in real-time, but
   will only be persisted back to firebase when `updateRef()` is called manually.
 
-### updateRef()
+### updateRef(values)
 
 Persists all local properties with the `sync` feature turned on to Firebase.
 Usually only needs to be called when the `manual` option is provided to `bindRef`.
+
+As a convenience, you can pass an object to `updateRef` with properties you wish
+to alter before persisting:
+
+```js
+myElement.updateRef({name: 'foo', email: 'bar@example.com'});
+```
+
+This is functionally identical to setting each of the specified properties and
+then calling `updateRef` with no arguments.
 
 ### unbindRef()
 
@@ -142,8 +152,8 @@ like this:
 ### Roadmap
 
 - [x] Allow for custom serialization (e.g. changing property names or altering values)
-- [ ] Specify `readOnly` for one-way bindings from Firebase
-- [ ] Create means of binding arrays in addition to lists
+- [x] Specify `readOnly` for one-way bindings from Firebase
+- [ ] Create means of binding arrays in addition to objects
 - [ ] Allow for sub-property path change binding (e.g. `user.name`)
 - [ ] Allow for a global Firebase root to be set such that a `path` option can be used instead of a full URL
 - [x] Add `updateRef()` to manually sync the entire property set back to the ref

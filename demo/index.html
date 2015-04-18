@@ -29,7 +29,7 @@
     <script>
       Polymer({
         is: 'demo-user',
-        mixins: [PolymerFire],
+        mixins: [PolymerFire.Binding],
         attached: function() {
           this.bindRef('https://mbleigh-sandbox.firebaseio.com/polymerfire/users/:userid');
         },
@@ -68,7 +68,7 @@
           <option>bar</option>
           <option>baz</option>
         </select>
-        <demo-user userid="{{userid}}" name="{{name}}" email="{{email}}" favorite-color="{{favoriteColor}}"></demo-user>
+        <demo-user log userid="{{userid}}" name="{{name}}" email="{{email}}" favorite-color="{{favoriteColor}}"></demo-user>
 
         <div id="form" hidden$="[[!showForm]]">
           <p><label>Name: <input value="{{name::keyup}}"></label></p>
