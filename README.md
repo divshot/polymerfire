@@ -90,14 +90,40 @@ on element property values. This can be achieved using templated path segments.
 
     https://my-app.firebaseio.com/users/:uid
 
-The above example would substitute the property `uid` as the last segment.
+The above example would substitute the property `uid` as the last segment. Note
+that you can also use a property substitution for the actual Firebase hostname:
+
+    https://:firebaseOrigin/users/:uid
+
+#### Preset Origin
+
+It can be useful for the Firebase origin to be configurable at a global level
+so that different Firebases can be used for local development, staging, and
+production, for example.
+
+PolymerFire allows for the registration of named origins. These are registered
+like so:
+
+    PolymerFire.origin('https://my.firebaseio.com', 'app');
+    
+The second argument is optional and allows you to keep multiple named origins
+in the same application (name will be `_default` if not set).
+
+To utilize named origins, specify your ref as an absolute path instead of a
+fully-qualified URL when binding, and use the `origin` option to specify a name:
+
+    this.bindRef('/users/:uid', {origin: 'app'});
+    
+If the `origin` option isn't specified, it will use the default if set.
 
 #### Delayed Binding
 
 PolymerFire **will not bind** templated path segments that are falsy (in the
 example above, if `uid` is null or an empty string, it won't bind). Instead,
 it will listen for the `<property>-changed` events on the template segments and
-bind when all segments are present.
+bind when all segments are present. This applies to origins as well, so you can
+safely set both dynamic path segments and origins asynchronously and count on
+PolymerFire to adjust accordingly.
 
 If you wish to explicitly allow an empty dynamic segment, simply use two colons
 instead of one (e.g. `/categories/:category/::subcategory`).
@@ -148,6 +174,12 @@ like this:
 <!-- email is bound to `change` and persist on blur or form submission -->
 <input value="{{email::change}}">
 ```
+
+### Debugging
+
+You can add the `log` attribute to a PolymerFire element to get useful debug
+log messages for events such as binding to a URL, values updating, persisting,
+etc.
 
 ### Roadmap
 
