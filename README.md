@@ -5,7 +5,7 @@ between custom Polymer elements and Firebase.
 
 ### Installation
 
-    bower install --save divshot/polymerfire
+    bower install --save polymerfire
 
 ### Usage
 
