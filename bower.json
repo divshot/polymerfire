@@ -22,6 +22,6 @@
   ],
   "dependencies": {
     "firebase": "~2.2.3",
-    "polymer": "polymer/polymer#^0.8.0"
+    "polymer": "polymer/polymer#0.8-preview"
   }
 }

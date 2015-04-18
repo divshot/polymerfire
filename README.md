@@ -22,25 +22,96 @@ use the `bindRef()` and `unbindRef()` methods to activate the binding:
 <script>
   Polymer({
     is: 'app-user',
-    mixins: [PolymerFire({
-      root: 'https://my-firebase.firebaseio.com/users',
-      childProperty: 'userid'
-    })],
+    mixins: [PolymerFire],
     properties: {
-      userid: String,
-      name: {
+      uid: String,
+      firstName: {
         type: String,
-        notify: true
+        notify: true,
+        sync: 'first_name'
+      },
+      email: {
+        type: String,
+        notify: true,
+        sync: true
       }
     },
     attached: function() {
-      this.bindRef();
+      this.bindRef('https://my-app.firebaseio.com/users/:uid');
     },
     detached: function() {
       this.unbindRef();
     }
   });
 </script>
+```
+
+### bindRef(ref, options)
+
+The `bindRef` method should be called to initiate Firebase synchronization for
+the element. It is recommended that it is called in either the `ready` or
+`attached` lifecycle callbacks.
+
+The `ref` argument can be either a Firebase ref (i.e. the result of `new Firebase()`)
+or a string representing a Firebase URL. You can bind to a dynamic location by
+inserting `:propName` into the URL, which will trigger a re-binding each time
+the property changes.
+
+#### Options
+
+* **manual:** When `true`, data will be synced *from* Firebase in real-time, but
+  will only be persisted back to firebase when `updateRef()` is called manually.
+
+### updateRef()
+
+Persists all local properties with the `sync` feature turned on to Firebase.
+Usually only needs to be called when the `manual` option is provided to `bindRef`.
+
+### unbindRef()
+
+The `unbindRef` method will disconnect all event listeners both on the element
+instance and on the Firebase location to which the instance has been bound. It
+should typically be called in the `detached` lifecycle event.
+
+### Dynamic Refs
+
+There are many cases where you might want the Firebase ref to be determined based
+on element property values. This can be achieved using templated path segments.
+
+    https://my-app.firebaseio.com/users/:uid
+
+The above example would substitute the property `uid` as the last segment.
+
+#### Delayed Binding
+
+PolymerFire **will not bind** templated path segments that are falsy (in the
+example above, if `uid` is null or an empty string, it won't bind). Instead,
+it will listen for the `<property>-changed` events on the template segments and
+bind when all segments are present.
+
+If you wish to explicitly allow an empty dynamic segment, simply use two colons
+instead of one (e.g. `/categories/:category/::subcategory`).
+
+### Property Configuration
+
+PolymerFire hooks into the existing declarative property system of Polymer. Simply
+add the `sync` option to a property to specify that it should be synced with
+Firebase. If `sync` is `true`, the property name will be used as-is. If `sync`
+is a string, the property will be synced to the specified key instead.
+
+```js
+{
+  properties: {
+    firstName: {
+      notify: true,
+      sync: 'first_name'
+    },
+    email: {
+      notify: true,
+      sync: true
+    }
+  }
+}
 ```
 
 ### Binding Mechanics
@@ -55,12 +126,12 @@ You can use Polymer's one-way bindings (`[[prop]]` instead of `{{prop}}`) to
 bind data in situations where you don't want changes to persist back to Firebase.
 
 As an example of binding to native form elements, if we had a PolymerFire mixin
-to the `name` and `email` properties of an element, we might do something like
-this:
+synced to the `name` and `email` properties of an element, we might do something
+like this:
 
 ```html
 <!-- app-user is bound to Firebase -->
-<app-user id="123" name="{{name}}" email="{{email}}"></app-user>
+<app-user uid="123" name="{{name}}" email="{{email}}"></app-user>
 
 <!-- name is bound to `keyup` and persists on each keystroke -->
 <input value="{{name::keyup}}">
@@ -68,25 +139,11 @@ this:
 <input value="{{email::change}}">
 ```
 
-### Available Options
-
-* **root:** The Firebase URL to which to bind. If `childProperty` is specified,
-  the root will be the base ref upon which `.child()` is called.
-* **rootProperty:** Allow the Firebase URL to be specified by a property of the
-  element instead of explicitly. This property must have `notify: true` set on
-  the element if you plan to dynamically alter the value.
-* **childProperty:** Use a property of the custom element to determine a child
-  path for the Firebase URL. Useful in cases where you want to bind to e.g.
-  a dynamic ID.
-* **properties:** An array of properties that will be reflected into the data
-  structure. You **must** declare each of these in the Polymer `properties`
-  configuration with `notify: true` in order for two-way binding to work.
-
 ### Roadmap
 
-- [ ] Allow for custom serialization (e.g. changing property names or altering values)
+- [x] Allow for custom serialization (e.g. changing property names or altering values)
 - [ ] Specify `readOnly` for one-way bindings from Firebase
 - [ ] Create means of binding arrays in addition to lists
 - [ ] Allow for sub-property path change binding (e.g. `user.name`)
 - [ ] Allow for a global Firebase root to be set such that a `path` option can be used instead of a full URL
-- [ ] Add `syncRef()` to manually sync the entire property set back to the ref
+- [x] Add `updateRef()` to manually sync the entire property set back to the ref

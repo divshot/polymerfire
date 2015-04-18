@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../../polymer/polymer.html">
+    <link rel="import" href="../polymerfire.html">
+  </head>
+  <body>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+      #content {
+        width: 400px;
+        margin: 50px auto;
+      }
+      #user-picker {
+        display: block;
+        font-size: 18px;
+        width: 100%;
+      }
+      #form {
+        padding: 0 25px;
+        border: 1px solid #eee;
+        border-radius: 3px;
+        margin-top: 20px;
+      }
+    </style>
+    <script>
+      Polymer({
+        is: 'demo-user',
+        mixins: [PolymerFire],
+        attached: function() {
+          this.bindRef('https://mbleigh-sandbox.firebaseio.com/polymerfire/users/:userid');
+        },
+        detached: function() {
+          this.unbindRef();
+        },
+        properties: {
+          userid: {
+            type: String,
+            notify: true
+          },
+          name: {
+            type: String,
+            notify: true,
+            sync: true
+          },
+          email: {
+            type: String,
+            notify: true,
+            sync: true
+          },
+          favoriteColor: {
+            type: String,
+            notify: true,
+            sync: 'favorite_color'
+          }
+        }
+      });
+    </script>
+
+    <template id="tpl" is="x-autobind">
+      <div id="content">
+        <select id="user-picker" value="{{userid::change}}">
+          <option value="">Select a User</option>
+          <option>foo</option>
+          <option>bar</option>
+          <option>baz</option>
+        </select>
+        <demo-user userid="{{userid}}" name="{{name}}" email="{{email}}" favorite-color="{{favoriteColor}}"></demo-user>
+
+        <div id="form" hidden$="[[!showForm]]">
+          <p><label>Name: <input value="{{name::keyup}}"></label></p>
+          <p><label>Email: <input value="{{email::keyup}}"></label></p>
+          <p><label>Favorite Color: <select value="{{favoriteColor::change}}">
+            <option value="">None Selected</option>
+            <option value="red">Red</option>
+            <option value="green">Green</option>
+            <option value="blue">Blue</option>
+          </select></label></p>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      var tpl = document.getElementById('tpl');
+      tpl.showForm = false;
+
+      document.addEventListener('change', function(e) {
+        if (e.target.id === "user-picker") {
+          if (e.target.value === "") {
+            tpl.showForm = false;
+          } else {
+            tpl.showForm = true;
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
