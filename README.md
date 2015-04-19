@@ -19,6 +19,8 @@ Next, when defining a custom element use the `PolymerFire` factory mixin and
 use the `bindRef()` and `unbindRef()` methods to activate the binding:
 
 ```html
+<link rel="import" href="bower_components/polymerfire/polymerfire.html">
+
 <script>
   Polymer({
     is: 'app-user',
@@ -95,7 +97,7 @@ that you can also use a property substitution for the actual Firebase hostname:
 
     https://:firebaseOrigin/users/:uid
 
-#### Preset Origin
+#### Configurable Origin
 
 It can be useful for the Firebase origin to be configurable at a global level
 so that different Firebases can be used for local development, staging, and
@@ -189,5 +191,5 @@ etc.
 - [x] Specify `readOnly` for one-way bindings from Firebase
 - [ ] Create means of binding arrays in addition to objects
 - [ ] Allow for sub-property path change binding (e.g. `user.name`)
-- [ ] Allow for a global Firebase root to be set such that a `path` option can be used instead of a full URL
+- [x] Allow for a global Firebase root to be set such that a `path` option can be used instead of a full URL
 - [x] Add `updateRef()` to manually sync the entire property set back to the ref
