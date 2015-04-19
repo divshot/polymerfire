@@ -55,6 +55,12 @@
             type: String,
             notify: true,
             sync: 'favorite_color'
+          },
+          address: {
+            type: Object,
+            notify: true,
+            sync: true,
+            default: function(){ return {street: '', city: '', state: ''}; }
           }
         }
       });
@@ -68,7 +74,7 @@
           <option>bar</option>
           <option>baz</option>
         </select>
-        <demo-user log userid="{{userid}}" name="{{name}}" email="{{email}}" favorite-color="{{favoriteColor}}"></demo-user>
+        <demo-user log userid="{{userid}}" name="{{name}}" email="{{email}}" favorite-color="{{favoriteColor}}" address="{{address}}"></demo-user>
 
         <div id="form" hidden$="[[!showForm]]">
           <p><label>Name: <input value="{{name::keyup}}"></label></p>
@@ -79,6 +85,12 @@
             <option value="green">Green</option>
             <option value="blue">Blue</option>
           </select></label></p>
+
+          <h4>Address</h4>
+
+          <p><label>Street:</label> <input value="{{address.street::keyup}}"></label></p>
+          <p><label>Street:</label> <input value="{{address.city::keyup}}"></label></p>
+          <p><label>Street:</label> <input size="2" value="{{address.state::keyup}}"></label></p>
         </div>
       </div>
     </template>
